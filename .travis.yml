@@ -1,0 +1,31 @@
+dist: trusty
+sudo: false
+language: go
+go:
+- 1.9.1
+before_install: 
+install:
+- go get -d github.com/MeABc/IsNetworkAlive
+script:
+- export CGO_ENABLED=0
+- GOOS=windows GOARCH=386 go build -ldflags "-s -w" -o IsNetworkAlive_x86.exe main.go
+- tar cjf IsNetworkAlive_windows_386-${TRAVIS_TAG}.tar.bz2 IsNetworkAlive_x86.exe
+- GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o IsNetworkAlive_x64.exe main.go
+- tar cjf IsNetworkAlive_windows_amd64-${TRAVIS_TAG}.tar.bz2 IsNetworkAlive_x64.exe
+deploy:
+  provider: releases
+  api_key:
+    secure: RfIEjZYYYJN2KRxUZ9Jet+9Encl/vDRLW5t49ZEwEwwUjeGBFYK2hRwZBTLjHuNCwNPu5Xd29aE48Zx61L800+YPStXszQOEA/iNlP7OoLEfL0SMTeeUfGOp+f+1cfumOZR6N/JpcogqKQWiE2Bz6nPIUuRd8MqAkDwGne7a9j086+Ew0PHa0J0WVcairI9YDcYBBvHc9ts8ugWL/1myguK/00XeqE432Bb9dGsBVk9sHDNVDu16PpJH7Uf+AN73nFc6PFdHVmUobydFq6U3BDiIMk4WX4B3kPvjlJ6c4w3TOZAVI2gyN86ztVfD1RTOfKKCUWIQ32cIIJITw5xY+7Glu/3LicvjapN4BfdANpNd06Saz+y8oZETwKneuecFwtr8Ry9wncTB5lcutXhLUxxK1OZzKAyn012U5Tl28P7RRBEH4ttYRNur6KZNipkUZ79X+dk1dgit42UyCy4u6w6Gse0WszCTRHtUrF+o1HhZNxQhyl9qoGWgfn2OVUDeFfOYrSg2Y7+PQLnQvmIsRABtlELZCGrP7GPZgmXsy0I3dh51L1glSdJ10p7l3YZMS5rPDsLRqMCLx0PSyTt+LBXsALpQQl6UQydbhpoZTMZAQEXbpELTWxmuYp6GFwmmXEUIB9secXwG3mRIYCBHtaSo9IuPe2lBLZkfvh3MRAM=
+  file:
+    - "IsNetworkAlive_windows_386-${TRAVIS_TAG}.tar.bz2"
+    - "IsNetworkAlive_windows_amd64-${TRAVIS_TAG}.tar.bz2"
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: MeABc/IsNetworkAlive
+branches:
+  only:
+  - master
+  - "/^v\\d+(\\.\\d+)+$/"
+notifications:
+  email: false
